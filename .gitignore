@@ -1,0 +1,22 @@
+# Build output
+BuildZip/
+bin/
+obj/
+*.dll
+*.pdb
+*.nupkg
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated build info
+BuildInfo.g.cs
+graphify-out/
