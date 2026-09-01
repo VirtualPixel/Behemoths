@@ -9,7 +9,7 @@ namespace Behemoths.Patches
     /// the arrival screen reads it (and before monsters spawn).
     /// </summary>
     [HarmonyPatch(typeof(EnemyDirector), "Awake")]
-    internal static class EnemyDirectorStartPatch
+    internal static class EnemyDirectorAwakePatch
     {
         [HarmonyPostfix]
         public static void Postfix()
