@@ -29,10 +29,11 @@
 
   <!-- ScalerCore is a runtime Thunderstore dependency; we only need a compile-time
        reference to its API. Defaults to the built DLL in the same Gale profile we
-       output to. Override with -p:ScalerCoreDll=/path/to/ScalerCore.dll. -->
+       output to, then the sibling ScalerCore checkout's packaged build.
+       Override with -p:ScalerCoreDll=/path/to/ScalerCore.dll. -->
   <PropertyGroup>
     <ScalerCoreDll Condition="'$(ScalerCoreDll)' == '' and Exists('$(GalePluginsDir)/ScalerCore/ScalerCore.dll')">$(GalePluginsDir)/ScalerCore/ScalerCore.dll</ScalerCoreDll>
-    <ScalerCoreDll Condition="'$(ScalerCoreDll)' == ''">$(MSBuildProjectDirectory)/../../ScalerCore/ScalerCore.dll</ScalerCoreDll>
+    <ScalerCoreDll Condition="'$(ScalerCoreDll)' == ''">$(MSBuildProjectDirectory)/../../ScalerCore/BuildZip/ScalerCore/ScalerCore.dll</ScalerCoreDll>
   </PropertyGroup>
 
   <PropertyGroup>

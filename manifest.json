@@ -5,6 +5,6 @@
   "description": "HOST ONLY. Random boss levels with a climbing chance: giant, tougher, harder-hitting monsters that drop huge heavy 2.5x orbs, plus richer loot. Fully configurable.",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2305",
-    "Vippy-ScalerCore-1.0.3"
+    "Vippy-ScalerCore-1.0.4"
   ]
 }
