@@ -28,10 +28,11 @@ namespace Behemoths.Services
         // Health is boosted once per monster; scaling is re-applied on every spawn
         // because ScalerCore restores enemy scale when a monster despawns.
         private static readonly HashSet<EnemyParent> _healthBoosted = new();
-        // The level-valuable payout runs once per boss level.
-        private static bool _lootBoosted;
-        // The arrival announcement (banner + stinger) fires once per boss level.
-        public static bool Announced { get; set; }
+        /// <summary>
+        /// True once the placed valuables of this boss level have been boosted. A valuable
+        /// that sets its value after that point is boosted at set time instead.
+        /// </summary>
+        public static bool LootBoosted { get; private set; }
 
         /// <summary>
         /// Clear all run state, including the cooldown. Called when a new run starts so a
@@ -44,14 +45,13 @@ namespace Behemoths.Services
             IsBossLevel = false;
             _bosses.Clear();
             _healthBoosted.Clear();
-            _lootBoosted = false;
-            Announced = false;
+            LootBoosted = false;
             Plugin.LogInfo("[Decide] new run, cooldown reset");
         }
 
         /// <summary>
         /// Roll the current level. Called once per gameplay level from the
-        /// EnemyDirector.Start patch. Resets all per-level state first.
+        /// EnemyDirector.Awake patch. Resets all per-level state first.
         /// </summary>
         public static void DecideForLevel()
         {
@@ -60,8 +60,7 @@ namespace Behemoths.Services
             IsBossLevel = false;
             _bosses.Clear();
             _healthBoosted.Clear();
-            _lootBoosted = false;
-            Announced = false;
+            LootBoosted = false;
 
             if (!SemiFunc.RunIsLevel()) return;
 
@@ -143,8 +142,8 @@ namespace Behemoths.Services
         /// </summary>
         public static void BoostLevelValuables()
         {
-            if (!IsBossLevel || _lootBoosted) return;
-            _lootBoosted = true;
+            if (!IsBossLevel || LootBoosted) return;
+            LootBoosted = true;
 
             float mult = PluginConfig.ValuableValueMultiplier.Value;
             if (mult == 1f) return;
@@ -236,7 +235,10 @@ namespace Behemoths.Services
             options.RejectExternalApply = true;
             options.IgnoreBonkExpand = true;
 
-            ScaleManager.ForceApply(enemy.Rigidbody.gameObject, options);
+            // A despawn restores the scale (ScaleController.OnDisable), so a respawn needs
+            // a fresh apply. If the controller is somehow still scaled, leave it: a second
+            // apply at the same factor is ScalerCore's toggle and would shrink the boss.
+            ScaleManager.ApplyIfNotScaled(enemy.Rigidbody.gameObject, options);
         }
 
         private static void ApplyResistance(Enemy enemy)
