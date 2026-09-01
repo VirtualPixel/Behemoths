@@ -13,7 +13,8 @@ namespace Behemoths.Patches
     /// level's spawn-value budget and can be inflated here directly.
     ///
     /// Every other valuable in a boss level is handled by RoundDirector.StartRoundLogic,
-    /// after the extraction goal is locked, so boosting them stays pure profit.
+    /// after the extraction goal is locked, so boosting them stays pure profit. One that
+    /// sets its value after that sweep gets the same multiplier here.
     /// </summary>
     [HarmonyPatch(typeof(ValuableObject), nameof(ValuableObject.DollarValueSetLogic))]
     internal static class ValuablePatch
@@ -32,7 +33,11 @@ namespace Behemoths.Patches
             if (!SemiFunc.IsMasterClientOrSingleplayer()) return;
             if (!SemiFunc.RunIsLevel()) return;
             if (!BossRoundService.IsBossLevel) return;
-            if (!BossRoundService.IsEnemyOrb(__instance)) return;
+            if (!BossRoundService.IsEnemyOrb(__instance))
+            {
+                BossRoundService.BoostLateValuable(__instance);
+                return;
+            }
 
             float mult = PluginConfig.OrbValueMultiplier.Value;
             if (mult != 1f)

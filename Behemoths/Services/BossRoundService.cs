@@ -153,6 +153,11 @@ namespace Behemoths.Services
             foreach (var valuable in Object.FindObjectsOfType<ValuableObject>())
             {
                 if (valuable == null || IsEnemyOrb(valuable)) continue;
+                // A valuable still waiting on its own value roll (its coroutine polls the
+                // level state and the view id) has nothing to multiply yet. Writing a value
+                // now would also flip dollarValueSet and skip its roll, leaving it at the
+                // placeholder 100. It gets boosted when it sets its value.
+                if (!valuable.dollarValueSet) continue;
                 float before = valuable.dollarValueCurrent;
                 float after = Mathf.Round(before * mult);
                 SetValue(valuable, after);
@@ -167,6 +172,23 @@ namespace Behemoths.Services
                 RoundDirector.instance.haulGoalMax += (int)added;
 
             Plugin.LogAlways($"[Loot] boosted {boosted} valuable(s) x{mult} (+{added:F0})");
+        }
+
+        /// <summary>
+        /// Boost a placed valuable that set its value after the level sweep ran. Called from
+        /// inside its own DollarValueSetLogic, so the game's coroutine still adds the boosted
+        /// value to the running total itself; nothing to fold in here.
+        /// </summary>
+        public static void BoostLateValuable(ValuableObject valuable)
+        {
+            if (!IsBossLevel || !LootBoosted) return;
+
+            float mult = PluginConfig.ValuableValueMultiplier.Value;
+            if (mult == 1f) return;
+
+            float after = Mathf.Round(valuable.dollarValueCurrent * mult);
+            SetValue(valuable, after);
+            Plugin.LogInfo($"[Loot] late valuable {valuable.name} x{mult} -> {after}");
         }
 
         /// <summary>
