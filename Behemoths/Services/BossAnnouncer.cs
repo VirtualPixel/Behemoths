@@ -62,17 +62,24 @@ namespace Behemoths.Services
             SetGraphic(mui.moonGraphicCurrent, rm.MoonGetIcon(ml));
             SetGraphic(mui.moonGraphicNext, rm.MoonGetIcon(ml + 1));
 
-            mui.textTitle.text = "BOSS LEVEL";
-            mui.attributes = new List<Moon.MoonAttribute>
+            // This popup replaces the game's own on a level that is also a moon change, so
+            // carry the moon's name and its modifier lines over instead of dropping them.
+            var lines = new List<Moon.MoonAttribute>();
+            if (rm.moonLevelChanged && ml > 0)
             {
-                new() { text = "Every monster here is a Behemoth" },
-                new() { text = "Bigger, tougher, and they hit harder" },
-                new() { text = "Huge orbs, huge payout, if you make it out" },
-            };
+                lines.Add(new Moon.MoonAttribute { text = rm.MoonGetName(ml) });
+                lines.AddRange(rm.MoonGetAttributes(ml));
+            }
+            lines.Add(new Moon.MoonAttribute { text = "Every monster here is a Behemoth" });
+            lines.Add(new Moon.MoonAttribute { text = "Bigger, tougher, and they hit harder" });
+            lines.Add(new Moon.MoonAttribute { text = "Huge orbs, huge payout, if you make it out" });
+
+            mui.textTitle.text = "BOSS LEVEL";
+            mui.attributes = lines;
             mui.SetState(MoonUI.State.Start);
 
             // Consume the moon-change flag so the game does not re-run its own popup over
-            // ours on a level that is both a boss and a moon level.
+            // ours.
             rm.moonLevelChanged = false;
 
             Plugin.LogAlways("[Announce] BOSS LEVEL popup shown");

@@ -59,7 +59,7 @@ namespace Behemoths.Configuration
                 "General",
                 "AnnounceBossLevel",
                 true,
-                "Call out a boss level on arrival: a BOSS LEVEL banner flashes on screen, the taxman posts a warning to the truck screen (which everyone sees), and a stinger plays. Off makes boss levels arrive silently.");
+                "Call out a boss level once it has loaded, using the game's moon-phase popup retitled BOSS LEVEL. Only the host sees it, since only the host runs the mod. Off makes boss levels arrive silently.");
 
             BaseChance = config.Bind(
                 "Boss Levels",
