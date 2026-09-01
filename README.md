@@ -6,7 +6,7 @@ Boss levels for R.E.P.O. The deeper your crew pushes, the more likely the next l
 
 ## What a boss level does
 
-- **It announces itself.** When a boss level begins, the game's moon-phase popup announces it as a BOSS LEVEL. Can be turned off.
+- **It announces itself.** When a boss level begins, the game's moon-phase popup announces it as a BOSS LEVEL. The host sees it (the mod only runs there); other players find out the usual way. Can be turned off.
 - **Climbing odds.** Each level rolls a chance to be a boss level. The chance starts low and grows the further you get, capped at a ceiling you set.
 - **Cooldown.** After a boss level, a configurable number of levels (3 by default) must pass before another can roll, so they stay special.
 - **Behemoth monsters.** Every monster on a boss level is scaled up: bigger, heavier, deeper sounding. They also hit harder, carry more health, and shrug off a share of incoming damage, so they take real punishment to bring down. By default they *look* about 1.4x bigger while the body they collide, path, see, and attack with stays vanilla, so they fit doors, see you, and hit you normally, they just look huge. Push SizeMultiplier higher for an even bigger look, or raise ColliderCap if you want them physically bigger too (at the cost of doors and reach).
@@ -37,6 +37,7 @@ Everything is exposed in the config file (and in-game via [REPOConfig](https://t
 | Boss Orbs / Durability | 5.0 | How much abuse a boss orb takes before it chips. 5 = roughly five times tougher than a normal valuable. |
 | Boss Orbs / Glow | true | Amber glow on boss orbs so the big prizes stand out. Host only. |
 | Boss Round Loot / ValuableMultiplier | 1.5 | Value of every other valuable in a boss level (pure profit, see above). |
+| LogLevel | Off | Off logs one line per level with the boss roll. Debug adds per-monster and per-orb lines. Verbose is a full trace. |
 
 Want pure chaos? Crank the size, drop the cooldown to 0, and raise MaxChance. Want a rare scary event? Lower BaseChance and ChancePerLevel and lengthen the cooldown.
 
@@ -45,3 +46,18 @@ Want pure chaos? Crank the size, drop the cooldown to 0, and raise MaxChance. Wa
 - Built on ScalerCore, so it shares its scaling, physics, audio, and multiplayer sync.
 - Cash and damage changes ride vanilla networking, so they apply to every player regardless of which mods they run.
 - A handful of special monster attacks deal fixed damage the game does not route through the normal damage path; those stay at their vanilla value while size, health, and orbs still apply.
+- The boss cooldown lives in memory for the run. Quitting to the menu and loading the save keeps the level count (so the climbing chance carries on) but clears the cooldown, so the first level back can roll a boss.
+
+## Installation
+
+Install with Gale or r2modman and ScalerCore comes along as a dependency. By hand: drop `Behemoths.dll` into `BepInEx/plugins/` next to ScalerCore. Only the host needs it.
+
+## Contact
+
+| Purpose | Where |
+|---|---|
+| Bug reports and suggestions | [GitHub Issues](https://github.com/VirtualPixel/Behemoths/issues) |
+| Questions, test builds, or just hanging out | [Vippy's Discord](https://discord.gg/kKqhck2NrP) |
+| R.E.P.O. modding in general | [R.E.P.O. Modding Server](https://discord.gg/9fDzZ9sk95) |
+
+Everything I make stays free. If one of these mods made your runs better and you feel like saying thanks, there is a [Ko-fi](https://ko-fi.com/vippydev).

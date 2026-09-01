@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Requires ScalerCore 1.0.4.
+- A placed valuable that rolls its value after the boss-level sweep is multiplied when it rolls, instead of being pinned at the placeholder value.
+- A boss that is still scaled when it spawns again is left alone rather than toggled back to vanilla size.
+- On a level that is both a moon change and a boss level, the popup keeps the moon's name and modifiers above the boss lines.
+- The announcement is the moon-phase popup, host side; the config text and README said banner, truck message, and stinger.
+- README: LogLevel documented, install notes, contact section.
+
 ## 1.0.0
 
 - First release.
