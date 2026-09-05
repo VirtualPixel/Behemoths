@@ -1,7 +1,7 @@
 {
   "name": "Behemoths",
   "version_number": "1.0.0",
-  "website_url": "https://github.com/VirtualPixel/Behemoths",
+  "website_url": "https://thunderstore.io/c/repo/p/Vippy/",
   "description": "HOST ONLY. Random boss levels with a climbing chance: giant, tougher, harder-hitting monsters that drop huge heavy 2.5x orbs, plus richer loot. Fully configurable.",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2305",

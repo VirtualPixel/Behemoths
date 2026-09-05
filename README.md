@@ -4,6 +4,10 @@ Boss levels for R.E.P.O. The deeper your crew pushes, the more likely the next l
 
 **HOST ONLY.** Only the host needs Behemoths. The host's settings rule the run. For other players to *see* the monsters and orbs at their giant size, they need [ScalerCore](https://thunderstore.io/c/repo/p/Vippy/ScalerCore/) installed (a free, required dependency). Players without ScalerCore still take the extra damage and still get paid the boosted cash; they just see everything at normal size.
 
+> **A note from Vippy**
+>
+> After way too long of a break, I'm finally back and working on these again :D Every one of my mods just got a full pass: bugs fixed, reports read, a few things I'd always meant to do. New builds and fixes land in [Vippy's Discord](https://discord.gg/kKqhck2NrP) before they hit Thunderstore, so come hang out. Thanks for sticking around.
+
 ## What a boss level does
 
 - **It announces itself.** When a boss level begins, the game's moon-phase popup announces it as a BOSS LEVEL. The host sees it (the mod only runs there); other players find out the usual way. Can be turned off.
@@ -52,12 +56,21 @@ Want pure chaos? Crank the size, drop the cooldown to 0, and raise MaxChance. Wa
 
 Install with Gale or r2modman and ScalerCore comes along as a dependency. By hand: drop `Behemoths.dll` into `BepInEx/plugins/` next to ScalerCore. Only the host needs it.
 
-## Contact
+## Come hang out
 
-| Purpose | Where |
+I'm Vippy. I make R.E.P.O. mods and I read every bug report.
+
+| | |
 |---|---|
-| Bug reports and suggestions | [GitHub Issues](https://github.com/VirtualPixel/Behemoths/issues) |
-| Questions, test builds, or just hanging out | [Vippy's Discord](https://discord.gg/kKqhck2NrP) |
-| R.E.P.O. modding in general | [R.E.P.O. Modding Server](https://discord.gg/9fDzZ9sk95) |
+| **[Vippy's Discord](https://discord.gg/kKqhck2NrP)** | Bug reports, test builds before Thunderstore, and a say in what comes next. Come say hi. |
+| **[R.E.P.O. Modding Server](https://discord.gg/9fDzZ9sk95)** | The whole modding scene, not just me. |
+| **[More of my mods](https://thunderstore.io/c/repo/p/Vippy/)** | Everything else I've made for R.E.P.O. |
 
-Everything I make stays free. If one of these mods made your runs better and you feel like saying thanks, there is a [Ko-fi](https://ko-fi.com/vippydev).
+## Keep the mods coming
+
+Everything I make is free and stays free. Two ways to help if you feel like it, neither one expected:
+
+- **[Ko-fi](https://ko-fi.com/vippydev)**: buy me a coffee and your name goes on the supporters list in my Discord. Every coffee buys another evening on the next update.
+- **[BisectHosting](https://bisecthosting.com/vippy)**: hosting a server for Minecraft or anything else your crew plays? Code `vippy` takes 25% off, and I get a cut at no cost to you. It's where my own servers live.
+
+[![25% off BisectHosting servers with code vippy](https://www.bisecthosting.com/partners/custom-banners/71eecea6-f5bb-437d-ac56-f6fee4266193.png)](https://bisecthosting.com/vippy)
