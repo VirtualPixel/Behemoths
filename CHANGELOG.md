@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Requires ScalerCore 1.0.4.
+- Requires ScalerCore 1.0.6.
 - A placed valuable that rolls its value after the boss-level sweep is multiplied when it rolls, instead of being pinned at the placeholder value.
 - A boss that is still scaled when it spawns again is left alone rather than toggled back to vanilla size.
 - On a level that is both a moon change and a boss level, the popup keeps the moon's name and modifiers above the boss lines.
