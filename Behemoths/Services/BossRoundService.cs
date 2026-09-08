@@ -8,8 +8,8 @@ namespace Behemoths.Services
 {
     /// <summary>
     /// Host-side brain for boss levels. Decides once per level whether it is a boss
-    /// level (climbing chance plus a cooldown), turns its monsters into bosses, and
-    /// tracks which monsters are bosses so the damage patch can find them.
+    /// level (climbing chance, map odds, a cooldown), turns its monsters into bosses,
+    /// and tracks which monsters are bosses so the damage patches can find them.
     ///
     /// Everything here runs on the master client only. ScalerCore syncs the visual
     /// scaling down to other ScalerCore clients; the cash and damage changes ride
@@ -17,13 +17,17 @@ namespace Behemoths.Services
     /// </summary>
     internal static class BossRoundService
     {
+        /// <summary>
+        /// Run stat holding the level number of the last boss level (0 = none yet). It
+        /// lives in the game's own run stats, so it is saved with the run and cleared by
+        /// the game when a new run starts.
+        /// </summary>
+        private const string LastBossStat = "behemothsLastBossLevel";
+
         /// <summary>True while the current level is a boss level.</summary>
         public static bool IsBossLevel { get; private set; }
 
-        // Levels completed since the last boss level. Drives the cooldown.
-        private static int _levelsSinceBoss = int.MaxValue;
-
-        // The monsters promoted to bosses this level (for the damage patch).
+        // The monsters promoted to bosses this level (for the damage patches).
         private static readonly HashSet<Enemy> _bosses = new();
         // Health is boosted once per monster; scaling is re-applied on every spawn
         // because ScalerCore restores enemy scale when a monster despawns.
@@ -33,21 +37,6 @@ namespace Behemoths.Services
         /// that sets its value after that point is boosted at set time instead.
         /// </summary>
         public static bool LootBoosted { get; private set; }
-
-        /// <summary>
-        /// Clear all run state, including the cooldown. Called when a new run starts so a
-        /// fresh game does not inherit the previous run's cooldown (these fields are static
-        /// and outlive a single run within the same session).
-        /// </summary>
-        public static void ResetRun()
-        {
-            _levelsSinceBoss = int.MaxValue;
-            IsBossLevel = false;
-            _bosses.Clear();
-            _healthBoosted.Clear();
-            LootBoosted = false;
-            Plugin.LogInfo("[Decide] new run, cooldown reset");
-        }
 
         /// <summary>
         /// Roll the current level. Called once per gameplay level from the
@@ -70,41 +59,48 @@ namespace Behemoths.Services
                 return;
             }
 
-            int completed = RunManager.instance != null ? RunManager.instance.levelsCompleted : 0;
-            int levelNumber = completed + 1; // levelsCompleted is 0 on the first level
+            var rm = RunManager.instance;
+            int levelNumber = rm.levelsCompleted + 1; // levelsCompleted is 0 on the first level
+            string map = BossOdds.MapName(rm.levelCurrent);
 
             if (levelNumber < PluginConfig.EarliestLevel.Value)
             {
-                _levelsSinceBoss++;
-                Plugin.LogAlways($"[Decide] level {levelNumber} below earliest ({PluginConfig.EarliestLevel.Value}), normal level");
+                Plugin.LogAlways($"[Decide] level {levelNumber} ({map}) below earliest ({PluginConfig.EarliestLevel.Value}), normal level");
                 return;
             }
 
-            if (_levelsSinceBoss < PluginConfig.CooldownLevels.Value)
+            int lastBoss = LastBossLevel();
+            int cooldown = PluginConfig.CooldownLevels.Value;
+            if (lastBoss > 0 && levelNumber - lastBoss <= cooldown)
             {
-                _levelsSinceBoss++;
-                Plugin.LogAlways($"[Decide] level {levelNumber} on cooldown ({_levelsSinceBoss}/{PluginConfig.CooldownLevels.Value}), normal level");
+                Plugin.LogAlways($"[Decide] level {levelNumber} ({map}) on cooldown ({levelNumber - lastBoss} since the boss on level {lastBoss}, cooldown {cooldown}), normal level");
                 return;
             }
 
-            // BaseChance is always a floor: it never gets capped below itself, so setting
-            // it to 100 guarantees a boss every eligible level even if MaxChance is lower.
-            float ceiling = Mathf.Max(PluginConfig.BaseChance.Value, PluginConfig.MaxChance.Value);
-            float chance = Mathf.Min(ceiling, PluginConfig.BaseChance.Value + PluginConfig.ChancePerLevel.Value * completed);
+            float chance = BossOdds.ChanceFor(rm.levelCurrent);
             float roll = Random.Range(0f, 100f);
 
             if (roll < chance)
             {
                 IsBossLevel = true;
-                _levelsSinceBoss = 0;
-                Plugin.LogAlways($"[Decide] level {levelNumber} is a BOSS LEVEL (rolled {roll:F1} < {chance:F1})");
+                // Written straight into the dictionary: PunManager's stat setter reads a
+                // field it only fills in Start, and this runs from an Awake in the same
+                // scene load. Only the host decides, so nothing needs to reach clients.
+                StatsManager.instance.runStats[LastBossStat] = levelNumber;
+                Plugin.LogAlways($"[Decide] level {levelNumber} ({map}) is a BOSS LEVEL (rolled {roll:F1} < {chance:F1})");
                 BossAnnouncer.Instance?.Trigger();
             }
             else
             {
-                _levelsSinceBoss++;
-                Plugin.LogAlways($"[Decide] level {levelNumber} normal (rolled {roll:F1} >= {chance:F1})");
+                Plugin.LogAlways($"[Decide] level {levelNumber} ({map}) normal (rolled {roll:F1} >= {chance:F1})");
             }
+        }
+
+        private static int LastBossLevel()
+        {
+            var stats = StatsManager.instance;
+            if (stats == null) return 0;
+            return stats.runStats.TryGetValue(LastBossStat, out int level) ? level : 0;
         }
 
         /// <summary>
@@ -125,6 +121,7 @@ namespace Behemoths.Services
             if (_healthBoosted.Add(parent))
             {
                 ApplyHealth(enemy);
+                ApplyTremor(parent, enemy);
                 Plugin.LogInfo($"[Promote] {parent.enemyName} is now a boss");
             }
 
@@ -133,6 +130,27 @@ namespace Behemoths.Services
 
         /// <summary>True if this monster was promoted to a boss this level.</summary>
         public static bool IsBoss(Enemy enemy) => enemy != null && _bosses.Contains(enemy);
+
+        /// <summary>
+        /// A boss hit, after the damage multiplier and the fairness cap. The cap keeps a
+        /// hit that was survivable at full health survivable at full health: a boosted hit
+        /// never exceeds HitCap percent of the victim's max health unless the vanilla hit
+        /// already did.
+        /// </summary>
+        public static int BoostHit(int damage, int maxHealth)
+        {
+            float mult = PluginConfig.BossDamageMultiplier.Value;
+            if (damage <= 0 || mult <= 1f) return damage;
+
+            int boosted = Mathf.RoundToInt(damage * mult);
+            float capPercent = PluginConfig.BossHitCap.Value;
+            if (capPercent < 100f)
+            {
+                int cap = Mathf.RoundToInt(maxHealth * capPercent / 100f);
+                boosted = Mathf.Min(boosted, Mathf.Max(damage, cap));
+            }
+            return boosted;
+        }
 
         /// <summary>
         /// Boost the cash value of every placed valuable in a boss level. Runs after the
@@ -282,12 +300,27 @@ namespace Behemoths.Services
             float mult = PluginConfig.BossHealthMultiplier.Value;
             if (mult <= 1f) return;
 
+            // The Tick keeps its normal pool. Its health is its hunger: it only bites while
+            // below the full mark its animator holds, and that mark is not networked, so a
+            // bigger pool would leave it either never biting or looking full forever to
+            // everyone else. Size, resistance, and damage still apply to it.
+            if (enemy.GetComponentInChildren<EnemyTick>(true) != null) return;
+
             int newMax = Mathf.Max(1, Mathf.RoundToInt(enemy.Health.health * mult));
             enemy.Health.health = newMax;
             // OnSpawn ran just before this (sets healthCurrent = health), so lift the
             // live pool to match the new maximum.
             enemy.Health.healthCurrent = newMax;
             Plugin.LogVerbose($"[Promote] health -> {newMax}");
+        }
+
+        private static void ApplyTremor(EnemyParent parent, Enemy enemy)
+        {
+            if (!enemy.HasRigidbody || enemy.Rigidbody == null) return;
+
+            var body = enemy.Rigidbody.gameObject;
+            if (body.GetComponent<BehemothTremor>() != null) return;
+            body.AddComponent<BehemothTremor>().Setup(parent, enemy.Rigidbody.rb);
         }
     }
 }

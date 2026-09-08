@@ -22,17 +22,25 @@ namespace Behemoths.Configuration
 
         // Boss level odds
         public static ConfigEntry<float> BaseChance = null!;
-        public static ConfigEntry<float> ChancePerLevel = null!;
         public static ConfigEntry<float> MaxChance = null!;
         public static ConfigEntry<int> CooldownLevels = null!;
         public static ConfigEntry<int> EarliestLevel = null!;
+
+        // Per-map odds, multipliers on the level chance
+        public static ConfigEntry<float> MapManor = null!;
+        public static ConfigEntry<float> MapArctic = null!;
+        public static ConfigEntry<float> MapWizard = null!;
+        public static ConfigEntry<float> MapMuseum = null!;
+        public static ConfigEntry<float> MapOther = null!;
 
         // Boss monsters
         public static ConfigEntry<float> BossSizeMultiplier = null!;
         public static ConfigEntry<float> BossHealthMultiplier = null!;
         public static ConfigEntry<float> BossDamageMultiplier = null!;
+        public static ConfigEntry<float> BossHitCap = null!;
         public static ConfigEntry<float> BossDamageResistance = null!;
         public static ConfigEntry<float> BossColliderCap = null!;
+        public static ConfigEntry<bool> BossTremors = null!;
 
         // Boss orbs (the valuables bosses drop on death)
         public static ConfigEntry<float> OrbValueMultiplier = null!;
@@ -66,15 +74,7 @@ namespace Behemoths.Configuration
                 "BaseChance",
                 10f,
                 new ConfigDescription(
-                    "Starting chance (percent) that any eligible level is a boss level, before the per-level ramp.",
-                    new AcceptableValueRange<float>(0f, 100f)));
-
-            ChancePerLevel = config.Bind(
-                "Boss Levels",
-                "ChancePerLevel",
-                5f,
-                new ConfigDescription(
-                    "Extra boss-level chance (percent) added for each level already completed, so the deeper you push the more likely a boss becomes.",
+                    "Boss-level chance (percent) at the start of a run. The chance climbs from here to MaxChance along the game's own difficulty curve, which tops out at level 10, and then holds.",
                     new AcceptableValueRange<float>(0f, 100f)));
 
             MaxChance = config.Bind(
@@ -82,7 +82,7 @@ namespace Behemoths.Configuration
                 "MaxChance",
                 60f,
                 new ConfigDescription(
-                    "Upper cap (percent) the climbing boss-level chance can reach. Never caps below BaseChance, so a BaseChance of 100 always means a guaranteed boss.",
+                    "Boss-level chance (percent) from level 10 onward. Never sits below BaseChance, so a BaseChance of 100 always means a guaranteed boss on every eligible level.",
                     new AcceptableValueRange<float>(0f, 100f)));
 
             CooldownLevels = config.Bind(
@@ -90,16 +90,56 @@ namespace Behemoths.Configuration
                 "CooldownLevels",
                 3,
                 new ConfigDescription(
-                    "Number of levels that must pass after a boss level before another can roll. 0 allows back-to-back boss levels.",
+                    "Number of levels that must pass after a boss level before another can roll. 0 allows back-to-back boss levels. Saved with the run, so quitting and loading does not reset it.",
                     new AcceptableValueRange<int>(0, 20)));
 
             EarliestLevel = config.Bind(
                 "Boss Levels",
                 "EarliestLevel",
-                1,
+                3,
                 new ConfigDescription(
-                    "The first level number that can be a boss level. 1 means a boss can appear from the very first level.",
+                    "The first level number that can be a boss level. 3 matches how the game holds its nastier monsters back until you have two levels behind you.",
                     new AcceptableValueRange<int>(1, 50)));
+
+            MapManor = config.Bind(
+                "Map Odds",
+                "Manor",
+                1f,
+                new ConfigDescription(
+                    "Multiplier on the boss-level chance at Headman Manor. 1 is the plain chance, 0 never, 2 double.",
+                    new AcceptableValueRange<float>(0f, 3f)));
+
+            MapArctic = config.Bind(
+                "Map Odds",
+                "Arctic",
+                0.75f,
+                new ConfigDescription(
+                    "Multiplier on the boss-level chance at McJannek Station (the Arctic map). Lower by default: its corridors are tight, and a Behemoth in a tight corridor is a wall.",
+                    new AcceptableValueRange<float>(0f, 3f)));
+
+            MapWizard = config.Bind(
+                "Map Odds",
+                "Wizard",
+                1.25f,
+                new ConfigDescription(
+                    "Multiplier on the boss-level chance at Swiftbroom Academy (the Wizard map). Higher by default: the halls have room for something huge to come around a corner.",
+                    new AcceptableValueRange<float>(0f, 3f)));
+
+            MapMuseum = config.Bind(
+                "Map Odds",
+                "Museum",
+                1.25f,
+                new ConfigDescription(
+                    "Multiplier on the boss-level chance at the Museum of Human Art. Higher by default: big open galleries suit big monsters.",
+                    new AcceptableValueRange<float>(0f, 3f)));
+
+            MapOther = config.Bind(
+                "Map Odds",
+                "OtherMaps",
+                1f,
+                new ConfigDescription(
+                    "Multiplier on the boss-level chance on any map not listed above, including modded ones.",
+                    new AcceptableValueRange<float>(0f, 3f)));
 
             BossSizeMultiplier = config.Bind(
                 "Boss Monsters",
@@ -122,8 +162,16 @@ namespace Behemoths.Configuration
                 "DamageMultiplier",
                 2f,
                 new ConfigDescription(
-                    "Boss attack damage relative to normal. 2 means a boss hits twice as hard.",
+                    "Boss attack damage relative to normal. 2 means a boss hits twice as hard. Reaches every player, modded or not: the host boosts its own hits directly and sends the extra damage to other players when it sees a hit land.",
                     new AcceptableValueRange<float>(1f, 10f)));
+
+            BossHitCap = config.Bind(
+                "Boss Monsters",
+                "HitCap",
+                75f,
+                new ConfigDescription(
+                    "Fairness cap: a boosted hit never takes more than this percent of a player's max health, unless the normal hit already did. 75 means a hit you could survive at full health stays survivable at full health; you just leave with a lot less. 100 turns the cap off.",
+                    new AcceptableValueRange<float>(10f, 100f)));
 
             BossDamageResistance = config.Bind(
                 "Boss Monsters",
@@ -140,6 +188,12 @@ namespace Behemoths.Configuration
                 new ConfigDescription(
                     "The size a boss physically behaves at: its collision, pathing, attack range, and where its attacks reach from, kept apart from how big it looks (SizeMultiplier). 1 keeps the body fully vanilla, so the monster fits doors, sees and attacks you normally, and just looks huge. Raise it for a bigger physical body that wedges in doorways and reaches its attacks from higher up.",
                     new AcceptableValueRange<float>(1f, 4f)));
+
+            BossTremors = config.Bind(
+                "Boss Monsters",
+                "Tremors",
+                true,
+                "A Behemoth on the move shakes your camera when it is close, so you feel one coming before you see it. Only the host feels it, since only the host runs the mod.");
 
             OrbValueMultiplier = config.Bind(
                 "Boss Orbs",
@@ -191,7 +245,7 @@ namespace Behemoths.Configuration
                 "General",
                 "LogLevel",
                 VerbosityLevel.Off,
-                "Off: boss-level decisions only. Debug: per-monster and per-orb effects. Verbose: full trace.");
+                "Off: boss-level decisions only. Debug: per-monster, per-hit, and per-orb effects. Verbose: full trace.");
         }
     }
 }

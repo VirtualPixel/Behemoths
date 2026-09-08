@@ -1,20 +1,18 @@
 # Changelog
 
-## Unreleased
-
-- Requires ScalerCore 1.0.6.
-- A placed valuable that rolls its value after the boss-level sweep is multiplied when it rolls, instead of being pinned at the placeholder value.
-- A boss that is still scaled when it spawns again is left alone rather than toggled back to vanilla size.
-- On a level that is both a moon change and a boss level, the popup keeps the moon's name and modifiers above the boss lines.
-- The announcement is the moon-phase popup, host side; the config text and README said banner, truck message, and stinger.
-- README: LogLevel documented, install notes, contact section.
-
 ## 1.0.0
 
 - First release.
-- Boss levels with a climbing chance and a configurable cooldown.
+- Boss levels roll with a chance that climbs along the game's own difficulty curve, from BaseChance at the start of a run to MaxChance at level 10.
+- The map scales the roll: Swiftbroom Academy and the Museum lean toward Behemoths, McJannek Station leans away, Headman Manor is the plain chance, and every map has its own slider (modded maps share one).
+- No boss levels before level 3, the same way the game holds its nastier monsters back. Configurable.
+- The cooldown between boss levels is saved with the run, so quitting and loading does not reset it.
 - Behemoth monsters: grow-gun scaling plus health, damage, and damage-resistance multipliers.
+- Behemoth hits reach every player in the lobby, host or not, mod or no mod.
+- A fairness cap keeps a hit you could survive at full health survivable at full health (75% of max health by default).
+- Behemoths on the move shake the host's camera when they're close.
 - Boss orbs: 2.5x value, twice the size, heavier, amber glow, tougher against losing value, never shrink back down.
 - Boss-round loot: every other valuable in the level worth more, added after the haul goal is set so it's pure profit and doesn't cut the spawn count.
-- Boss levels announce themselves: red number + BOSS LEVEL caption on the arrival screen, a taxman warning on the truck screen, and a stinger. Toggleable.
+- Boss levels announce themselves through the game's moon-phase popup, retitled BOSS LEVEL. On a level that is also a moon change, the moon's name and modifiers stay above the boss lines. Toggleable.
 - Everything configurable, with in-game sliders under REPOConfig.
+- Requires ScalerCore 1.0.6.

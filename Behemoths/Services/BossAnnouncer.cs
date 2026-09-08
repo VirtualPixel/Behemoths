@@ -70,9 +70,9 @@ namespace Behemoths.Services
                 lines.Add(new Moon.MoonAttribute { text = rm.MoonGetName(ml) });
                 lines.AddRange(rm.MoonGetAttributes(ml));
             }
-            lines.Add(new Moon.MoonAttribute { text = "Every monster here is a Behemoth" });
-            lines.Add(new Moon.MoonAttribute { text = "Bigger, tougher, and they hit harder" });
-            lines.Add(new Moon.MoonAttribute { text = "Huge orbs, huge payout, if you make it out" });
+            lines.Add(new Moon.MoonAttribute { text = "Behemoths roam this level" });
+            lines.Add(new Moon.MoonAttribute { text = "They hit harder and take more killing" });
+            lines.Add(new Moon.MoonAttribute { text = "Their orbs are worth a fortune" });
 
             mui.textTitle.text = "BOSS LEVEL";
             mui.attributes = lines;

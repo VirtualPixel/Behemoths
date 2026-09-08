@@ -1,6 +1,6 @@
 # Behemoths
 
-Boss levels for R.E.P.O. The deeper your crew pushes, the more likely the next level turns into a boss level: every monster on it is a towering, tougher, harder-hitting Behemoth, and the orbs they drop are huge, heavy, and worth a small fortune. High risk, high reward.
+Boss levels for R.E.P.O. The deeper your crew pushes, the more likely the next level turns into a boss level: every monster on it is a towering, tougher, harder-hitting Behemoth, and the orbs they drop are huge, heavy, and worth a small fortune. You never know which level it will be, only that some maps are Behemoth country. High risk, high reward.
 
 **HOST ONLY.** Only the host needs Behemoths. The host's settings rule the run. For other players to *see* the monsters and orbs at their giant size, they need [ScalerCore](https://thunderstore.io/c/repo/p/Vippy/ScalerCore/) installed (a free, required dependency). Players without ScalerCore still take the extra damage and still get paid the boosted cash; they just see everything at normal size.
 
@@ -10,10 +10,14 @@ Boss levels for R.E.P.O. The deeper your crew pushes, the more likely the next l
 
 ## What a boss level does
 
-- **It announces itself.** When a boss level begins, the game's moon-phase popup announces it as a BOSS LEVEL. The host sees it (the mod only runs there); other players find out the usual way. Can be turned off.
-- **Climbing odds.** Each level rolls a chance to be a boss level. The chance starts low and grows the further you get, capped at a ceiling you set.
-- **Cooldown.** After a boss level, a configurable number of levels (3 by default) must pass before another can roll, so they stay special.
+- **It announces itself.** When a boss level begins, the game's moon-phase popup announces it as a BOSS LEVEL. Only the host sees it (the mod only runs there), so it's on you to warn the crew, or to let the first Behemoth do it. Can be turned off.
+- **Climbing odds.** Each level rolls a chance to be a boss level. The chance starts low and climbs along the game's own difficulty curve, the same one that adds monsters as you go, topping out at level 10.
+- **Some maps more than others.** The map you land on scales the roll. By default Swiftbroom Academy and the Museum lean toward Behemoths (big halls), McJannek Station leans away (tight corridors), and Headman Manor is the plain chance. Every map has its own slider, and modded maps get one shared slider.
+- **Never on level 1 or 2.** Boss levels can't roll before level 3, the same way the game holds its nastier monsters back until you have two levels behind you. Configurable.
+- **Cooldown.** After a boss level, a configurable number of levels (3 by default) must pass before another can roll, so they stay special. The cooldown is saved with the run, so quitting and loading a save does not reset it.
 - **Behemoth monsters.** Every monster on a boss level is scaled up: bigger, heavier, deeper sounding. They also hit harder, carry more health, and shrug off a share of incoming damage, so they take real punishment to bring down. By default they *look* about 1.4x bigger while the body they collide, path, see, and attack with stays vanilla, so they fit doors, see you, and hit you normally, they just look huge. Push SizeMultiplier higher for an even bigger look, or raise ColliderCap if you want them physically bigger too (at the cost of doors and reach).
+- **Hits that hurt, but stay fair.** Behemoth hits do double damage by default, for every player in the lobby. A fairness cap keeps any hit you could survive at full health survivable at full health: a boosted hit tops out at 75% of your max health unless the normal hit was already worse than that. You leave the encounter hurting, not dead from one touch you didn't see coming.
+- **Tremors.** A Behemoth on the move shakes your camera when it's close, so you feel one coming through the walls before you see it. Host only: nobody else runs the mod, and camera shake doesn't travel.
 - **Boss orbs.** The orb a Behemoth drops is twice the size, heavier, worth 2.5x the cash of a normal one, amber-glowing, and tough enough to take a beating without losing its value. It never shrinks back down. Hauling one is a job.
 - **Richer loot.** Every other valuable in a boss level is worth more too (1.5x by default). This is added after the level's value is set, so it's pure profit: the map still spawns its normal number of valuables and the extraction goal stays the same.
 
@@ -25,32 +29,39 @@ Everything is exposed in the config file (and in-game via [REPOConfig](https://t
 | --- | --- | --- |
 | Enabled | true | Master switch for boss levels. |
 | AnnounceBossLevel | true | Announce boss levels through the game's moon-phase popup, reading BOSS LEVEL. |
-| Boss Levels / BaseChance | 10% | Starting boss-level chance. |
-| Boss Levels / ChancePerLevel | 5% | Added to the chance for each level completed. |
-| Boss Levels / MaxChance | 60% | Ceiling the climbing chance can reach. Never caps below BaseChance, so BaseChance 100 = guaranteed. |
-| Boss Levels / CooldownLevels | 3 | Levels between boss levels. 0 allows back-to-back. |
-| Boss Levels / EarliestLevel | 1 | First level number that can be a boss level. |
+| Boss Levels / BaseChance | 10% | Boss-level chance at the start of a run. |
+| Boss Levels / MaxChance | 60% | Boss-level chance from level 10 on. The climb between the two follows the game's difficulty curve. Never sits below BaseChance, so BaseChance 100 = guaranteed. |
+| Boss Levels / CooldownLevels | 3 | Levels between boss levels. 0 allows back-to-back. Saved with the run. |
+| Boss Levels / EarliestLevel | 3 | First level number that can be a boss level. |
+| Map Odds / Manor | 1.0 | Multiplier on the chance at Headman Manor. |
+| Map Odds / Arctic | 0.75 | Multiplier on the chance at McJannek Station. |
+| Map Odds / Wizard | 1.25 | Multiplier on the chance at Swiftbroom Academy. |
+| Map Odds / Museum | 1.25 | Multiplier on the chance at the Museum of Human Art. |
+| Map Odds / OtherMaps | 1.0 | Multiplier on the chance on any other map, modded ones included. |
 | Boss Monsters / SizeMultiplier | 1.4 | How large Behemoths look. The body they behave with stays at ColliderCap, so this is purely the appearance. |
 | Boss Monsters / HealthMultiplier | 3.0 | How much more health they have. |
 | Boss Monsters / DamageMultiplier | 2.0 | How much harder they hit. |
+| Boss Monsters / HitCap | 75% | A boosted hit never takes more than this share of a player's max health, unless the normal hit already did. 100 turns the cap off. |
 | Boss Monsters / DamageResistance | 0.5 | Fraction of incoming damage shrugged off, on top of the extra health. 0.5 = takes half. |
 | Boss Monsters / ColliderCap | 1.0 | The size a boss physically behaves at (collision, pathing, attack range and reach height), apart from its look. 1 keeps the body vanilla so it fits doors and attacks you normally while looking big. |
+| Boss Monsters / Tremors | true | Behemoths on the move shake the host's camera when they're close. |
 | Boss Orbs / ValueMultiplier | 2.5 | Cash value of a boss orb. |
 | Boss Orbs / SizeMultiplier | 2.0 | How large a boss orb looks. |
 | Boss Orbs / WeightMultiplier | 2.5 | How heavy a boss orb is, set apart from its size. |
 | Boss Orbs / Durability | 5.0 | How much abuse a boss orb takes before it chips. 5 = roughly five times tougher than a normal valuable. |
 | Boss Orbs / Glow | true | Amber glow on boss orbs so the big prizes stand out. Host only. |
 | Boss Round Loot / ValuableMultiplier | 1.5 | Value of every other valuable in a boss level (pure profit, see above). |
-| LogLevel | Off | Off logs one line per level with the boss roll. Debug adds per-monster and per-orb lines. Verbose is a full trace. |
+| LogLevel | Off | Off logs one line per level with the boss roll. Debug adds per-monster, per-hit, and per-orb lines. Verbose is a full trace. |
 
-Want pure chaos? Crank the size, drop the cooldown to 0, and raise MaxChance. Want a rare scary event? Lower BaseChance and ChancePerLevel and lengthen the cooldown.
+Want pure chaos? Crank the size, drop the cooldown to 0, set EarliestLevel to 1, and raise MaxChance. For a rare scary event, lower BaseChance and MaxChance and lengthen the cooldown. Zeroing a map's slider keeps Behemoths off that map entirely.
 
 ## Compatibility
 
 - Built on ScalerCore, so it shares its scaling, physics, audio, and multiplayer sync.
-- Cash and damage changes ride vanilla networking, so they apply to every player regardless of which mods they run.
-- A handful of special monster attacks deal fixed damage the game does not route through the normal damage path; those stay at their vanilla value while size, health, and orbs still apply.
-- The boss cooldown lives in memory for the run. Quitting to the menu and loading the save keeps the level count (so the climbing chance carries on) but clears the cooldown, so the first level back can roll a boss.
+- Cash and damage changes ride vanilla networking, so they apply to every player regardless of which mods they run. For players other than the host, the host sends the extra damage the moment it sees a Behemoth's hit land. That arrives as a second hit right behind the normal one, so it flashes twice, and under heavy lag a hit the host saw and you dodged can still sting.
+- The Tick keeps its normal health. For the Tick health is hunger, and a bigger pool would either stop it biting or make it look full forever to everyone but the host. It still grows, hits harder, and shrugs off damage.
+- Damage a monster deals without being credited for it (a throw that tumbles you into a wall, a pit) is not boosted.
+- The boss cooldown is stored in the run's own stats, so it survives quitting to the menu and loading the save, and a new run starts clean.
 
 ## Installation
 
