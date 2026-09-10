@@ -20,3 +20,6 @@ Thumbs.db
 # Generated build info
 BuildInfo.g.cs
 graphify-out/
+
+# the store icon ships with the source
+!BuildZip/icon256.png
