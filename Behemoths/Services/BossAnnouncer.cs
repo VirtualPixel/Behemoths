@@ -65,10 +65,18 @@ namespace Behemoths.Services
             // On a level that is also a moon change this popup stands in for the moon's own,
             // which never runs (MoonUIPatch). The moon's modifiers still apply; the screen is
             // the boss's alone.
+            // The lines quote the config, so a host who tunes the numbers sees the numbers.
+            float size = PluginConfig.BossSizeMultiplier.Value;
+            float health = PluginConfig.BossHealthMultiplier.Value;
+            float damage = PluginConfig.BossDamageMultiplier.Value;
+            float orbs = PluginConfig.OrbValueMultiplier.Value;
+            float loot = PluginConfig.ValuableValueMultiplier.Value;
             var lines = new List<Moon.MoonAttribute>();
-            lines.Add(new Moon.MoonAttribute { text = "Behemoths roam this level" });
-            lines.Add(new Moon.MoonAttribute { text = "They hit harder and take more killing" });
-            lines.Add(new Moon.MoonAttribute { text = "Their orbs are worth a fortune" });
+            lines.Add(new Moon.MoonAttribute { text = size > 1.01f ? $"Behemoths roam this level, {size:0.#}x their size" : "Behemoths roam this level" });
+            lines.Add(new Moon.MoonAttribute { text = $"{health:0.#}x the health, hits {damage:0.#}x as hard" });
+            lines.Add(new Moon.MoonAttribute { text = $"Their orbs are worth {orbs:0.#}x" });
+            if (loot > 1.01f)
+                lines.Add(new Moon.MoonAttribute { text = $"Every valuable is worth {loot:0.#}x more" });
 
             mui.textTitle.text = "BOSS LEVEL";
             mui.attributes = lines;

@@ -23,12 +23,21 @@ Boss levels for R.E.P.O. The deeper your crew pushes, the more likely the next l
 
 ## Configuration
 
-Everything is exposed in the config file (and in-game via [REPOConfig](https://thunderstore.io/c/repo/p/nickklmao/REPOConfig/) if you have it, rendered as sliders):
+Everything is exposed in the config file (and in-game via [REPOConfig](https://thunderstore.io/c/repo/p/nickklmao/REPOConfig/) if you have it, rendered as sliders). The defaults are what I play on, so you can install it and never open the file.
+
+If you do open it, four questions cover most of what people want to change:
+
+- **How often?** BaseChance, MaxChance and CooldownLevels. Want every level to be a boss level? 100, 100, 0.
+- **How big?** SizeMultiplier. The body caps under it keep a huge one from wedging in a doorway.
+- **How tough?** HealthMultiplier and DamageMultiplier. HitCap is the fairness rail so a 5x boss can't one-shot you.
+- **How rich?** Boss Orbs / ValueMultiplier for the orb, Boss Round Loot / ValuableMultiplier for everything else on the level.
+
+The whole list:
 
 | Setting | Default | What it does |
 | --- | --- | --- |
 | Enabled | true | Master switch for boss levels. |
-| AnnounceBossLevel | true | Announce boss levels through the game's moon-phase popup, reading BOSS LEVEL. On a level that is also a moon change, the boss screen shows instead of the moon one (the moon's modifiers still apply). |
+| AnnounceBossLevel | true | Announce boss levels through the game's moon-phase popup, reading BOSS LEVEL, with the size, health, damage, orb and loot numbers you set. On a level that is also a moon change, the boss screen shows instead of the moon one (the moon's modifiers still apply). |
 | Boss Levels / BaseChance | 10% | Boss-level chance at the start of a run. |
 | Boss Levels / MaxChance | 60% | Boss-level chance from level 10 on. The climb between the two follows the game's difficulty curve. Never sits below BaseChance, so BaseChance 100 = guaranteed. |
 | Boss Levels / CooldownLevels | 3 | Levels between boss levels. 0 allows back-to-back. Saved with the run. |
