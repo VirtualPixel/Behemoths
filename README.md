@@ -82,6 +82,7 @@ I'm Vippy. I make R.E.P.O. mods and I read every bug report.
 | **[Vippy's Discord](https://discord.gg/kKqhck2NrP)** | Bug reports, test builds before Thunderstore, and a say in what comes next. Come say hi. |
 | **[R.E.P.O. Modding Server](https://discord.gg/9fDzZ9sk95)** | The whole modding scene, not just me. |
 | **[More of my mods](https://thunderstore.io/c/repo/p/Vippy/)** | Everything else I've made for R.E.P.O. |
+| **[Source on GitHub](https://github.com/VirtualPixel/Behemoths)** | The code, if you want to poke at it or send a fix. |
 
 ## Keep the mods coming
 
