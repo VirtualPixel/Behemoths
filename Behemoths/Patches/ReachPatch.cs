@@ -46,16 +46,21 @@ namespace Behemoths.Patches
         {
             float[] metres = Targets.First(t => t.Type == original.DeclaringType!.Name && t.Method == original.Name).Metres;
             MethodInfo scale = AccessTools.Method(typeof(ReachPatch), nameof(Scale));
+            MethodInfo distance = AccessTools.Method(typeof(Vector3), nameof(Vector3.Distance), new[] { typeof(Vector3), typeof(Vector3) });
             int swapped = 0;
+            bool afterDistance = false;
             foreach (CodeInstruction code in instructions)
             {
                 yield return code;
-                if (code.opcode == OpCodes.Ldc_R4 && code.operand is float f && metres.Any(m => Mathf.Approximately(m, f)))
+                // Only the metre count compared right after a Vector3.Distance call; the same number
+                // used as a timer elsewhere in the method is left alone.
+                if (afterDistance && code.opcode == OpCodes.Ldc_R4 && code.operand is float f && metres.Any(m => Mathf.Approximately(m, f)))
                 {
                     yield return new CodeInstruction(OpCodes.Ldarg_0);
                     yield return new CodeInstruction(OpCodes.Call, scale);
                     swapped++;
                 }
+                afterDistance = code.opcode == OpCodes.Call && code.operand is MethodInfo mi && mi == distance;
             }
             Plugin.LogInfo($"[Reach] {original.DeclaringType!.Name}.{original.Name}: {swapped} distance(s) now follow boss size");
         }
