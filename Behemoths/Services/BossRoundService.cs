@@ -268,7 +268,7 @@ namespace Behemoths.Services
             // it still fits the doorways the navmesh was baked for.
             options.EnemyPhysicalFactorCap = PluginConfig.BossColliderCap.Value;
             options.EnemyWidthFactorCap = 0f;
-            options.EnemyHeightFactorCap = 0f;
+            options.EnemyHeightFactorCap = PluginConfig.BossHeightCap.Value;
             options.EnemyNavRadiusFactorCap = 1f;
             // A boss stays a boss: a shrink ray can't shrink it and taking a hit
             // doesn't snap it back to normal size.

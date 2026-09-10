@@ -2,7 +2,7 @@
 
 ## 1.0.1
 
-- Bosses have the body they look like. The collider cap defaulted to 1, so a giant Robe had a vanilla-sized hitbox and grab body inside a huge mesh: shots and grabs went through most of it and the game rescued you off its tiny collider. Now the body follows the size, pathing keeps its vanilla width so they still get through doors, and the "close enough to swing" distance each monster has written into its attack code grows with it, so a giant actually reaches you.
+- Bosses have the body they look like. The collider cap defaulted to 1, so a giant Robe had a vanilla-sized hitbox and grab body inside a huge mesh: shots and grabs went through most of it and the game rescued you off its tiny collider. Now the body follows the size, pathing keeps its vanilla width so they still get through doors, and the "close enough to swing" distance each monster has written into its attack code grows with it, so a giant actually reaches you. Height holds at vanilla by default (HeightCap) so a wide boss still walks through doorways instead of lying on its side in one.
 
 ## 1.0.0
 

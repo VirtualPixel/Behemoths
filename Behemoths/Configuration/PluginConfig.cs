@@ -40,6 +40,7 @@ namespace Behemoths.Configuration
         public static ConfigEntry<float> BossHitCap = null!;
         public static ConfigEntry<float> BossDamageResistance = null!;
         public static ConfigEntry<float> BossColliderCap = null!;
+        public static ConfigEntry<float> BossHeightCap = null!;
         public static ConfigEntry<bool> BossTremors = null!;
 
         // Boss orbs (the valuables bosses drop on death)
@@ -187,6 +188,14 @@ namespace Behemoths.Configuration
                 0f,
                 new ConfigDescription(
                     "The size a boss physically is: its hitbox, its grab body and where its attacks reach from. 0 follows SizeMultiplier, so the body you see is the body you shoot, grab and get hit by. Pathing keeps its vanilla width either way, so a giant still finds its way through doors even if it clips the frame. Set a number to hold the body smaller than the look.",
+                    new AcceptableValueRange<float>(0f, 4f)));
+
+            BossHeightCap = config.Bind(
+                "Boss Monsters",
+                "HeightCap",
+                1f,
+                new ConfigDescription(
+                    "How tall a boss's body is allowed to get, as a multiple of vanilla. 1 keeps it door height so it can still walk through rooms; the width still follows the look. 0 lets the body grow as tall as it looks, which leaves a big one stuck on its side in the first doorway.",
                     new AcceptableValueRange<float>(0f, 4f)));
 
             BossTremors = config.Bind(
