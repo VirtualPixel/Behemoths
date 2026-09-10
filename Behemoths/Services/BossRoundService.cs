@@ -44,6 +44,7 @@ namespace Behemoths.Services
         /// </summary>
         public static void DecideForLevel()
         {
+            Patches.ReachPatch.Forget();
             // Clear first, so a boss level never leaks its state into the next scene
             // (e.g. the arena) even when that scene never gets to roll.
             IsBossLevel = false;
@@ -262,14 +263,13 @@ namespace Behemoths.Services
             ScaleOptions options = ScaleOptions.Growth;
             options.Factor = factor;
             options.AllowedTargets = ScaleTargets.Enemies;
-            // The mesh scales to Factor; the collider and nav agent stop at ColliderCap.
-            // This is ScalerCore's grow-gun behaviour: the cap sits close to the visual so
-            // the body stays grounded (a far-smaller collider sinks the mesh) while still
-            // fitting the doorways the navmesh was baked for.
+            // The body scales with the look unless ColliderCap holds it back, so hits, grabs and
+            // the monster's own reach line up with the mesh. The nav agent keeps vanilla width so
+            // it still fits the doorways the navmesh was baked for.
             options.EnemyPhysicalFactorCap = PluginConfig.BossColliderCap.Value;
             options.EnemyWidthFactorCap = 0f;
             options.EnemyHeightFactorCap = 0f;
-            options.EnemyNavRadiusFactorCap = 0f;
+            options.EnemyNavRadiusFactorCap = 1f;
             // A boss stays a boss: a shrink ray can't shrink it and taking a hit
             // doesn't snap it back to normal size.
             options.RejectExternalApply = true;

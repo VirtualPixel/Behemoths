@@ -184,10 +184,10 @@ namespace Behemoths.Configuration
             BossColliderCap = config.Bind(
                 "Boss Monsters",
                 "ColliderCap",
-                1f,
+                0f,
                 new ConfigDescription(
-                    "The size a boss physically behaves at: its collision, pathing, attack range, and where its attacks reach from, kept apart from how big it looks (SizeMultiplier). 1 keeps the body fully vanilla, so the monster fits doors, sees and attacks you normally, and just looks huge. Raise it for a bigger physical body that wedges in doorways and reaches its attacks from higher up.",
-                    new AcceptableValueRange<float>(1f, 4f)));
+                    "The size a boss physically is: its hitbox, its grab body and where its attacks reach from. 0 follows SizeMultiplier, so the body you see is the body you shoot, grab and get hit by. Pathing keeps its vanilla width either way, so a giant still finds its way through doors even if it clips the frame. Set a number to hold the body smaller than the look.",
+                    new AcceptableValueRange<float>(0f, 4f)));
 
             BossTremors = config.Bind(
                 "Boss Monsters",
