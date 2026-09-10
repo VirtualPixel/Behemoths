@@ -5,6 +5,7 @@
 - Config changes apply to the bosses already in the level, from the REPOConfig menu or a save of the cfg file. Size, ColliderCap, HeightCap, WidthCap, health, and resistance all retune live; health is rebuilt from the vanilla base so it never stacks. Made for dialing in the body on a boss you are looking at.
 - New WidthCap alongside HeightCap, for maps whose doors don't like a wide body. Reach follows the width cap when one is set.
 - Setting DamageResistance to 0 now actually clears it on a live boss.
+- A boss level that lands on a moon change shows only the BOSS LEVEL screen. The moon screen is skipped, its modifiers still apply.
 
 ## 1.0.1
 

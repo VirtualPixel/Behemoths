@@ -28,7 +28,7 @@ Everything is exposed in the config file (and in-game via [REPOConfig](https://t
 | Setting | Default | What it does |
 | --- | --- | --- |
 | Enabled | true | Master switch for boss levels. |
-| AnnounceBossLevel | true | Announce boss levels through the game's moon-phase popup, reading BOSS LEVEL. |
+| AnnounceBossLevel | true | Announce boss levels through the game's moon-phase popup, reading BOSS LEVEL. On a level that is also a moon change, the boss screen shows instead of the moon one (the moon's modifiers still apply). |
 | Boss Levels / BaseChance | 10% | Boss-level chance at the start of a run. |
 | Boss Levels / MaxChance | 60% | Boss-level chance from level 10 on. The climb between the two follows the game's difficulty curve. Never sits below BaseChance, so BaseChance 100 = guaranteed. |
 | Boss Levels / CooldownLevels | 3 | Levels between boss levels. 0 allows back-to-back. Saved with the run. |
