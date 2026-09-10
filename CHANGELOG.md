@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2
+
+- Config changes apply to the bosses already in the level, from the REPOConfig menu or a save of the cfg file. Size, ColliderCap, HeightCap, WidthCap, health, and resistance all retune live; health is rebuilt from the vanilla base so it never stacks. Made for dialing in the body on a boss you are looking at.
+- New WidthCap alongside HeightCap, for maps whose doors don't like a wide body. Reach follows the width cap when one is set.
+- Setting DamageResistance to 0 now actually clears it on a live boss.
+
 ## 1.0.1
 
 - Bosses have the body they look like. The collider cap defaulted to 1, so a giant Robe had a vanilla-sized hitbox and grab body inside a huge mesh: shots and grabs went through most of it and the game rescued you off its tiny collider. Now the body follows the size, pathing keeps its vanilla width so they still get through doors, and the "close enough to swing" distance each monster has written into its attack code grows with it, so a giant actually reaches you. Height holds at vanilla by default (HeightCap) so a wide boss still walks through doorways instead of lying on its side in one.

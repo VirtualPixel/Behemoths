@@ -32,6 +32,8 @@ namespace Behemoths.Services
         // Health is boosted once per monster; scaling is re-applied on every spawn
         // because ScalerCore restores enemy scale when a monster despawns.
         private static readonly HashSet<EnemyParent> _healthBoosted = new();
+        // Vanilla max health per boss, so a retune multiplies the base and never compounds.
+        private static readonly Dictionary<EnemyParent, int> _baseHealth = new();
         /// <summary>
         /// True once the placed valuables of this boss level have been boosted. A valuable
         /// that sets its value after that point is boosted at set time instead.
@@ -50,6 +52,7 @@ namespace Behemoths.Services
             IsBossLevel = false;
             _bosses.Clear();
             _healthBoosted.Clear();
+            _baseHealth.Clear();
             LootBoosted = false;
 
             if (!SemiFunc.RunIsLevel()) return;
@@ -121,6 +124,8 @@ namespace Behemoths.Services
 
             if (_healthBoosted.Add(parent))
             {
+                if (enemy.HasHealth && enemy.Health != null)
+                    _baseHealth[parent] = enemy.Health.health;
                 ApplyHealth(enemy);
                 ApplyTremor(parent, enemy);
                 Plugin.LogInfo($"[Promote] {parent.enemyName} is now a boss");
@@ -131,6 +136,74 @@ namespace Behemoths.Services
 
         /// <summary>True if this monster was promoted to a boss this level.</summary>
         public static bool IsBoss(Enemy enemy) => enemy != null && _bosses.Contains(enemy);
+
+        /// <summary>
+        /// Push the current config onto every boss that is alive right now. Size goes through
+        /// ScalerCore's rescale path, the body caps are re-read by its per-frame clamp, health
+        /// is rebuilt from the vanilla base so it never compounds, and resistance is re-set.
+        /// Damage, hit cap, and reach read the config at hit time and need nothing here.
+        /// </summary>
+        public static void Retune()
+        {
+            if (!IsBossLevel || !SemiFunc.IsMasterClientOrSingleplayer()) return;
+
+            int touched = 0;
+            foreach (KeyValuePair<EnemyParent, int> pair in _baseHealth)
+            {
+                EnemyParent parent = pair.Key;
+                if (parent == null) continue;
+                Enemy? enemy = parent.Enemy;
+                if (enemy == null || !enemy.gameObject.activeInHierarchy) continue;
+
+                RetuneScale(enemy);
+                RetuneHealth(enemy, pair.Value);
+                ApplyResistance(enemy);
+                touched++;
+            }
+            Plugin.LogAlways($"[Tune] size {PluginConfig.BossSizeMultiplier.Value:0.##} collider {PluginConfig.BossColliderCap.Value:0.##} height {PluginConfig.BossHeightCap.Value:0.##} health x{PluginConfig.BossHealthMultiplier.Value:0.##} resist {PluginConfig.BossDamageResistance.Value:0.##} damage x{PluginConfig.BossDamageMultiplier.Value:0.##}: {touched} live boss(es) updated");
+        }
+
+        private static void RetuneScale(Enemy enemy)
+        {
+            if (!enemy.HasRigidbody || enemy.Rigidbody == null) return;
+
+            GameObject body = enemy.Rigidbody.gameObject;
+            ScaleController? ctrl = ScaleManager.GetController(body);
+            if (ctrl == null) return;
+
+            ScaleOptions options = BuildOptions();
+            if (options.Factor <= 1f)
+            {
+                if (ctrl.IsScaled) ScaleManager.ForceRestore(body);
+                return;
+            }
+            if (!ctrl.IsScaled)
+            {
+                ScaleManager.ApplyIfNotScaled(body, options);
+                return;
+            }
+            // Same factor through Apply is ScalerCore's toggle and would shrink the boss, so a
+            // cap-only change just swaps the options; the per-frame clamp picks the caps up.
+            if (Mathf.Approximately(ctrl.CurrentOptions.Factor, options.Factor))
+                ScaleManager.ForceUpdateOptions(body, options);
+            else
+                ScaleManager.ForceApply(body, options);
+        }
+
+        private static void RetuneHealth(Enemy enemy, int baseHealth)
+        {
+            if (!enemy.HasHealth || enemy.Health == null || baseHealth <= 0) return;
+            if (enemy.GetComponentInChildren<EnemyTick>(true) != null) return;
+
+            EnemyHealth health = enemy.Health;
+            int newMax = Mathf.Max(1, Mathf.RoundToInt(baseHealth * Mathf.Max(1f, PluginConfig.BossHealthMultiplier.Value)));
+            if (newMax == health.health) return;
+
+            // Keep the same fraction of the pool, so a wounded boss stays wounded.
+            float fraction = health.health > 0 ? (float)health.healthCurrent / health.health : 1f;
+            health.health = newMax;
+            health.healthCurrent = Mathf.Clamp(Mathf.RoundToInt(newMax * fraction), 1, newMax);
+        }
 
         /// <summary>
         /// A boss hit, after the damage multiplier and the fairness cap. The cap keeps a
@@ -257,23 +330,8 @@ namespace Behemoths.Services
         {
             if (!enemy.HasRigidbody || enemy.Rigidbody == null) return;
 
-            float factor = PluginConfig.BossSizeMultiplier.Value;
-            if (factor <= 1f) return;
-
-            ScaleOptions options = ScaleOptions.Growth;
-            options.Factor = factor;
-            options.AllowedTargets = ScaleTargets.Enemies;
-            // The body scales with the look unless ColliderCap holds it back, so hits, grabs and
-            // the monster's own reach line up with the mesh. The nav agent keeps vanilla width so
-            // it still fits the doorways the navmesh was baked for.
-            options.EnemyPhysicalFactorCap = PluginConfig.BossColliderCap.Value;
-            options.EnemyWidthFactorCap = 0f;
-            options.EnemyHeightFactorCap = PluginConfig.BossHeightCap.Value;
-            options.EnemyNavRadiusFactorCap = 1f;
-            // A boss stays a boss: a shrink ray can't shrink it and taking a hit
-            // doesn't snap it back to normal size.
-            options.RejectExternalApply = true;
-            options.IgnoreBonkExpand = true;
+            ScaleOptions options = BuildOptions();
+            if (options.Factor <= 1f) return;
 
             // A despawn restores the scale (ScaleController.OnDisable), so a respawn needs
             // a fresh apply. If the controller is somehow still scaled, leave it: a second
@@ -281,16 +339,33 @@ namespace Behemoths.Services
             ScaleManager.ApplyIfNotScaled(enemy.Rigidbody.gameObject, options);
         }
 
+        private static ScaleOptions BuildOptions()
+        {
+            ScaleOptions options = ScaleOptions.Growth;
+            options.Factor = PluginConfig.BossSizeMultiplier.Value;
+            options.AllowedTargets = ScaleTargets.Enemies;
+            // The body scales with the look unless ColliderCap holds it back, so hits, grabs and
+            // the monster's own reach line up with the mesh. The nav agent keeps vanilla width so
+            // it still fits the doorways the navmesh was baked for.
+            options.EnemyPhysicalFactorCap = PluginConfig.BossColliderCap.Value;
+            options.EnemyWidthFactorCap = PluginConfig.BossWidthCap.Value;
+            options.EnemyHeightFactorCap = PluginConfig.BossHeightCap.Value;
+            options.EnemyNavRadiusFactorCap = 1f;
+            // A boss stays a boss: a shrink ray can't shrink it and taking a hit
+            // doesn't snap it back to normal size.
+            options.RejectExternalApply = true;
+            options.IgnoreBonkExpand = true;
+            return options;
+        }
+
         private static void ApplyResistance(Enemy enemy)
         {
             if (!enemy.HasHealth || enemy.Health == null) return;
 
-            float resist = PluginConfig.BossDamageResistance.Value;
-            if (resist <= 0f) return;
-
+            float resist = Mathf.Clamp(PluginConfig.BossDamageResistance.Value, 0f, 0.95f);
             // Long timer because the game zeroes resistance once it lapses; re-applied
-            // every spawn, so a respawned boss stays tough.
-            enemy.Health.OverrideDamageResistance(Mathf.Clamp(resist, 0f, 0.95f), 1e9f);
+            // every spawn, so a respawned boss stays tough. Zero with no timer clears it.
+            enemy.Health.OverrideDamageResistance(resist, resist > 0f ? 1e9f : 0f);
         }
 
         private static void ApplyHealth(Enemy enemy)

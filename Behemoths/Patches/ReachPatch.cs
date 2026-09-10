@@ -76,8 +76,9 @@ namespace Behemoths.Patches
             }
             if (enemy == null || !BossRoundService.IsBoss(enemy))
                 return metres;
+            // Reach is horizontal, so it follows the width the body actually has.
             float factor = PluginConfig.BossSizeMultiplier.Value;
-            float cap = PluginConfig.BossColliderCap.Value;
+            float cap = PluginConfig.BossWidthCap.Value > 0f ? PluginConfig.BossWidthCap.Value : PluginConfig.BossColliderCap.Value;
             if (cap > 0f)
                 factor = Mathf.Min(factor, cap);
             return metres * Mathf.Max(1f, factor);

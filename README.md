@@ -15,7 +15,7 @@ Boss levels for R.E.P.O. The deeper your crew pushes, the more likely the next l
 - **Some maps more than others.** The map you land on scales the roll. By default Swiftbroom Academy and the Museum lean toward Behemoths (big halls), McJannek Station leans away (tight corridors), and Headman Manor is the plain chance. Every map has its own slider, and modded maps get one shared slider.
 - **Never on level 1 or 2.** Boss levels can't roll before level 3, the same way the game holds its nastier monsters back until you have two levels behind you. Configurable.
 - **Cooldown.** After a boss level, a configurable number of levels (3 by default) must pass before another can roll, so they stay special. The cooldown is saved with the run, so quitting and loading a save does not reset it.
-- **Behemoth monsters.** Every monster on a boss level is scaled up: bigger, heavier, deeper sounding. They also hit harder, carry more health, and shrug off a share of incoming damage, so they take real punishment to bring down. By default they *look* about 1.4x bigger while the body they collide, path, see, and attack with stays vanilla, so they fit doors, see you, and hit you normally, they just look huge. Push SizeMultiplier higher for an even bigger look, or raise ColliderCap if you want them physically bigger too (at the cost of doors and reach).
+- **Behemoth monsters.** Every monster on a boss level is scaled up: bigger, heavier, deeper sounding. They also hit harder, carry more health, and shrug off a share of incoming damage, so they take real punishment to bring down. By default they are 1.4x bigger, body included: what you see is what you shoot, grab, and get hit by, and their swing reaches as far as it looks. Height holds at vanilla so they still fit doorways and ceilings, and pathing keeps its vanilla width so they always find the door. Push SizeMultiplier higher for more bulk, or hold the body back with the caps where a map's doors need it.
 - **Hits that hurt, but stay fair.** Behemoth hits do double damage by default, for every player in the lobby. A fairness cap keeps any hit you could survive at full health survivable at full health: a boosted hit tops out at 75% of your max health unless the normal hit was already worse than that. You leave the encounter hurting, not dead from one touch you didn't see coming.
 - **Tremors.** A Behemoth on the move shakes your camera when it's close, so you feel one coming through the walls before you see it. Host only: nobody else runs the mod, and camera shake doesn't travel.
 - **Boss orbs.** The orb a Behemoth drops is twice the size, heavier, worth 2.5x the cash of a normal one, amber-glowing, and tough enough to take a beating without losing its value. It never shrinks back down. Hauling one is a job.
@@ -38,12 +38,14 @@ Everything is exposed in the config file (and in-game via [REPOConfig](https://t
 | Map Odds / Wizard | 1.25 | Multiplier on the chance at Swiftbroom Academy. |
 | Map Odds / Museum | 1.25 | Multiplier on the chance at the Museum of Human Art. |
 | Map Odds / OtherMaps | 1.0 | Multiplier on the chance on any other map, modded ones included. |
-| Boss Monsters / SizeMultiplier | 1.4 | How large Behemoths look. The body they behave with stays at ColliderCap, so this is purely the appearance. |
+| Boss Monsters / SizeMultiplier | 1.4 | How large Behemoths are, look and body. Height is held by HeightCap. |
 | Boss Monsters / HealthMultiplier | 3.0 | How much more health they have. |
 | Boss Monsters / DamageMultiplier | 2.0 | How much harder they hit. |
 | Boss Monsters / HitCap | 75% | A boosted hit never takes more than this share of a player's max health, unless the normal hit already did. 100 turns the cap off. |
 | Boss Monsters / DamageResistance | 0.5 | Fraction of incoming damage shrugged off, on top of the extra health. 0.5 = takes half. |
-| Boss Monsters / ColliderCap | 1.0 | The size a boss physically behaves at (collision, pathing, attack range and reach height), apart from its look. 1 keeps the body vanilla so it fits doors and attacks you normally while looking big. |
+| Boss Monsters / ColliderCap | 0 | Holds the whole body (hitbox, grab body, reach) at this multiple of vanilla while the look keeps growing. 0 lets the body follow SizeMultiplier. |
+| Boss Monsters / HeightCap | 1.0 | How tall the body may get. 1 keeps it door height. 0 lets it grow as tall as it looks, which leaves a big one stuck on its side in the first doorway. |
+| Boss Monsters / WidthCap | 0 | How wide the body may get. 0 follows the look. Set a number, say 1.5, when a map's doorways are giving a wide boss trouble. |
 | Boss Monsters / Tremors | true | Behemoths on the move shake the host's camera when they're close. |
 | Boss Orbs / ValueMultiplier | 2.5 | Cash value of a boss orb. |
 | Boss Orbs / SizeMultiplier | 2.0 | How large a boss orb looks. |
@@ -54,6 +56,10 @@ Everything is exposed in the config file (and in-game via [REPOConfig](https://t
 | LogLevel | Off | Off logs one line per level with the boss roll. Debug adds per-monster, per-hit, and per-orb lines. Verbose is a full trace. |
 
 Want pure chaos? Crank the size, drop the cooldown to 0, set EarliestLevel to 1, and raise MaxChance. For a rare scary event, lower BaseChance and MaxChance and lengthen the cooldown. Zeroing a map's slider keeps Behemoths off that map entirely.
+
+### Tuning with the game running
+
+Every boss value applies to the Behemoths already in the level. Move a slider in REPOConfig, or edit the cfg file and save it, and within about a second the live bosses take the new size, body caps, health, and resistance. Damage and reach read the config on every hit anyway. The console logs a `[Tune]` line each time so you can see it land. Handy for dialing in a collider size on a boss that is standing right in front of you.
 
 ## Compatibility
 

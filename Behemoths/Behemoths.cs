@@ -25,6 +25,7 @@ namespace Behemoths
             PluginConfig.Init(Config);
 
             gameObject.AddComponent<BossAnnouncer>();
+            gameObject.AddComponent<LiveTuning>().Setup(Config);
 
             Harmony ??= new Harmony(Info.Metadata.GUID);
             Harmony.PatchAll();

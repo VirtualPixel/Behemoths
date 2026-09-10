@@ -41,6 +41,7 @@ namespace Behemoths.Configuration
         public static ConfigEntry<float> BossDamageResistance = null!;
         public static ConfigEntry<float> BossColliderCap = null!;
         public static ConfigEntry<float> BossHeightCap = null!;
+        public static ConfigEntry<float> BossWidthCap = null!;
         public static ConfigEntry<bool> BossTremors = null!;
 
         // Boss orbs (the valuables bosses drop on death)
@@ -196,6 +197,14 @@ namespace Behemoths.Configuration
                 1f,
                 new ConfigDescription(
                     "How tall a boss's body is allowed to get, as a multiple of vanilla. 1 keeps it door height so it can still walk through rooms; the width still follows the look. 0 lets the body grow as tall as it looks, which leaves a big one stuck on its side in the first doorway.",
+                    new AcceptableValueRange<float>(0f, 4f)));
+
+            BossWidthCap = config.Bind(
+                "Boss Monsters",
+                "WidthCap",
+                0f,
+                new ConfigDescription(
+                    "How wide a boss's body is allowed to get, as a multiple of vanilla. 0 lets the width follow the look. Set a number to hold the hitbox narrower than the mesh, for example 1.5 when a map's doorways are giving a wide boss trouble. Overrides ColliderCap on width.",
                     new AcceptableValueRange<float>(0f, 4f)));
 
             BossTremors = config.Bind(
