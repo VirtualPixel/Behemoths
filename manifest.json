@@ -1,8 +1,8 @@
 {
   "name": "Behemoths",
-  "version_number": "1.0.2",
+  "version_number": "1.0.0",
   "website_url": "https://thunderstore.io/c/repo/p/Vippy/",
-  "description": "HOST ONLY. Boss levels that roll by depth and by map: giant, tougher, harder-hitting monsters that drop huge heavy 2.5x orbs, plus richer loot. Never before level 3. Fully configurable.",
+  "description": "HOST ONLY. Boss levels that roll by depth and by map: towering, tougher, harder-hitting monsters with huge heavy 2.5x orbs and richer loot. Never before level 3. Tune every number live.",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2305",
     "Vippy-ScalerCore-1.0.6"

@@ -1,6 +1,6 @@
 # Behemoths
 
-Boss levels for R.E.P.O. The deeper your crew pushes, the more likely the next level turns into a boss level: every monster on it is a towering, tougher, harder-hitting Behemoth, and the orbs they drop are huge, heavy, and worth a small fortune. You never know which level it will be, only that some maps are Behemoth country. High risk, high reward.
+Boss levels for R.E.P.O. The deeper your crew pushes, the more likely the next level turns into a boss level: every monster on it is a towering, tougher, harder-hitting Behemoth, and the orbs they drop are huge, heavy, and worth a small fortune. You never know which level it will be, only that some maps are Behemoth country. High risk, high reward, and a whole new reason to dread the third level.
 
 **HOST ONLY.** Only the host needs Behemoths. The host's settings rule the run. For other players to *see* the monsters and orbs at their giant size, they need [ScalerCore](https://thunderstore.io/c/repo/p/Vippy/ScalerCore/) installed (a free, required dependency). Players without ScalerCore still take the extra damage and still get paid the boosted cash; they just see everything at normal size.
 

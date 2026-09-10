@@ -1,29 +1,16 @@
 # Changelog
 
-## 1.0.2
-
-- Config changes apply to the bosses already in the level, from the REPOConfig menu or a save of the cfg file. Size, ColliderCap, HeightCap, WidthCap, health, and resistance all retune live; health is rebuilt from the vanilla base so it never stacks. Made for dialing in the body on a boss you are looking at.
-- New WidthCap alongside HeightCap, for maps whose doors don't like a wide body. Reach follows the width cap when one is set.
-- Setting DamageResistance to 0 now actually clears it on a live boss.
-- A boss level that lands on a moon change shows only the BOSS LEVEL screen. The moon screen is skipped, its modifiers still apply.
-
-## 1.0.1
-
-- Bosses have the body they look like. The collider cap defaulted to 1, so a giant Robe had a vanilla-sized hitbox and grab body inside a huge mesh: shots and grabs went through most of it and the game rescued you off its tiny collider. Now the body follows the size, pathing keeps its vanilla width so they still get through doors, and the "close enough to swing" distance each monster has written into its attack code grows with it, so a giant actually reaches you. Height holds at vanilla by default (HeightCap) so a wide boss still walks through doorways instead of lying on its side in one.
-
 ## 1.0.0
 
-- First release.
-- Boss levels roll with a chance that climbs along the game's own difficulty curve, from BaseChance at the start of a run to MaxChance at level 10.
+First release.
+
+- Boss levels roll with a chance that climbs along the game's own difficulty curve, from BaseChance at the start of a run to MaxChance at level 10. Never before level 3, and a cooldown between them that is saved with the run.
 - The map scales the roll: Swiftbroom Academy and the Museum lean toward Behemoths, McJannek Station leans away, Headman Manor is the plain chance, and every map has its own slider (modded maps share one).
-- No boss levels before level 3, the same way the game holds its nastier monsters back. Configurable.
-- The cooldown between boss levels is saved with the run, so quitting and loading does not reset it.
-- Behemoth monsters: grow-gun scaling plus health, damage, and damage-resistance multipliers.
+- Behemoths have the body they look like: hitbox, grab body, and the swing they reach you with all follow the size. Height holds at door height so a wide one still walks through doorways instead of lying on its side in one, and pathing keeps its vanilla width so they always find the door.
+- Health, damage, and damage resistance multipliers, with a fairness cap so a hit you could survive at full health stays survivable at full health.
 - Behemoth hits reach every player in the lobby, host or not, mod or no mod.
-- A fairness cap keeps a hit you could survive at full health survivable at full health (75% of max health by default).
 - Behemoths on the move shake the host's camera when they're close.
-- Boss orbs: 2.5x value, twice the size, heavier, amber glow, tougher against losing value, never shrink back down.
-- Boss-round loot: every other valuable in the level worth more, added after the haul goal is set so it's pure profit and doesn't cut the spawn count.
-- Boss levels announce themselves through the game's moon-phase popup, retitled BOSS LEVEL. On a level that is also a moon change, the moon's name and modifiers stay above the boss lines. Toggleable.
-- Everything configurable, with in-game sliders under REPOConfig.
-- Requires ScalerCore 1.0.6.
+- Boss orbs: 2.5x value, twice the size, heavier, amber glow, tougher against losing value, never shrink back down. Every other valuable in a boss level is worth more too, added after the haul goal is set so it's pure profit.
+- Boss levels announce themselves through the game's moon-phase popup, retitled BOSS LEVEL. On a level that is also a moon change the boss screen takes the moon's slot; the moon's modifiers still apply.
+- Config changes land on the bosses already in the level, from the REPOConfig menu or a saved cfg edit, so you can dial in a body on a boss standing in front of you.
+- Requires ScalerCore.
