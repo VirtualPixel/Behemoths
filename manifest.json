@@ -2,7 +2,7 @@
   "name": "Behemoths",
   "version_number": "1.0.0",
   "website_url": "https://github.com/VirtualPixel/Behemoths",
-  "description": "HOST ONLY. Boss levels that roll by depth and by map: towering, tougher, harder-hitting monsters with huge heavy 2.5x orbs and richer loot. Never before level 3. Tune every number live.",
+  "description": "HOST ONLY. Boss levels that roll by depth and map: monsters with far more health, harder hits, and fatter orbs and loot the whole lobby feels. Size, glow and tremors show for anyone running the mod. Never before level 3, tune it all live.",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2305",
     "Vippy-ScalerCore-1.0.6"
